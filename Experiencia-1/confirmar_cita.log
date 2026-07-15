@@ -1,0 +1,121 @@
+2026-07-12 20:38:26,385 [INFO] Llamada entrante. Anexo=1001
+2026-07-12 20:38:26,385 [INFO] Cita encontrada anexo=1001 paciente=Juan Perez
+2026-07-12 20:38:48,687 [ERROR] Error no controlado en el AGI: Error executing application, or hangup
+Traceback (most recent call last):
+  File "/var/lib/asterisk/agi-bin/confirmar_cita.agi", line 183, in main
+    tecla = capturar_respuesta(agi, log)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/lib/asterisk/agi-bin/confirmar_cita.agi", line 143, in capturar_respuesta
+    tecla = agi.get_data(AUDIO_MENU, 5000, 1)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/asterisk/agi.py", line 448, in get_data
+    result = self.execute('GET DATA', filename, timeout, max_digits)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/asterisk/agi.py", line 150, in execute
+    return self.get_result()
+           ^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/asterisk/agi.py", line 191, in get_result
+    raise AGIAppError("Error executing application, or hangup")
+asterisk.agi.AGIAppError: Error executing application, or hangup
+2026-07-12 20:49:21,199 [INFO] Llamada entrante. Anexo=1001
+2026-07-12 20:49:21,199 [INFO] Cita encontrada anexo=1001 paciente=Juan Perez
+2026-07-12 20:49:32,218 [ERROR] Error no controlado en el AGI: Error executing application, or hangup
+Traceback (most recent call last):
+  File "/var/lib/asterisk/agi-bin/confirmar_cita.agi", line 180, in main
+    locutar_cita(agi, cita, log)
+  File "/var/lib/asterisk/agi-bin/confirmar_cita.agi", line 121, in locutar_cita
+    agi.say_date(epoch)
+  File "/usr/local/lib/python3.12/dist-packages/asterisk/agi.py", line 401, in say_date
+    res = self.execute('SAY DATE', seconds, escape_digits)['result'][0]
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/asterisk/agi.py", line 150, in execute
+    return self.get_result()
+           ^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/asterisk/agi.py", line 191, in get_result
+    raise AGIAppError("Error executing application, or hangup")
+asterisk.agi.AGIAppError: Error executing application, or hangup
+2026-07-12 21:12:13,682 [INFO] Llamada entrante. Anexo=1001
+2026-07-12 21:12:13,683 [INFO] Cita encontrada anexo=1001 paciente=Juan Perez
+2026-07-12 21:12:25,904 [ERROR] Error no controlado en el AGI: Error executing application, or hangup
+Traceback (most recent call last):
+  File "/var/lib/asterisk/agi-bin/confirmar_cita.agi", line 180, in main
+    locutar_cita(agi, cita, log)
+  File "/var/lib/asterisk/agi-bin/confirmar_cita.agi", line 121, in locutar_cita
+    agi.say_date(epoch)
+  File "/usr/local/lib/python3.12/dist-packages/asterisk/agi.py", line 401, in say_date
+    res = self.execute('SAY DATE', seconds, escape_digits)['result'][0]
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/asterisk/agi.py", line 150, in execute
+    return self.get_result()
+           ^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/asterisk/agi.py", line 191, in get_result
+    raise AGIAppError("Error executing application, or hangup")
+asterisk.agi.AGIAppError: Error executing application, or hangup
+2026-07-12 21:19:45,774 [INFO] Llamada entrante. Anexo=1001
+2026-07-12 21:19:45,775 [INFO] Cita encontrada anexo=1001 paciente=Juan Perez
+2026-07-12 21:19:57,462 [ERROR] Error no controlado en el AGI: Error executing application, or hangup
+Traceback (most recent call last):
+  File "/var/lib/asterisk/agi-bin/confirmar_cita.agi", line 180, in main
+    locutar_cita(agi, cita, log)
+  File "/var/lib/asterisk/agi-bin/confirmar_cita.agi", line 121, in locutar_cita
+    agi.say_date(epoch)
+  File "/usr/local/lib/python3.12/dist-packages/asterisk/agi.py", line 401, in say_date
+    res = self.execute('SAY DATE', seconds, escape_digits)['result'][0]
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/asterisk/agi.py", line 150, in execute
+    return self.get_result()
+           ^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/asterisk/agi.py", line 191, in get_result
+    raise AGIAppError("Error executing application, or hangup")
+asterisk.agi.AGIAppError: Error executing application, or hangup
+2026-07-12 21:24:33,935 [INFO] Llamada entrante. Anexo=1001
+2026-07-12 21:24:33,936 [INFO] Cita encontrada anexo=1001 paciente=Juan Perez
+2026-07-12 21:24:54,319 [ERROR] Error no controlado en el AGI: Error executing application, or hangup
+Traceback (most recent call last):
+  File "/var/lib/asterisk/agi-bin/confirmar_cita.agi", line 183, in main
+    tecla = capturar_respuesta(agi, log)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/lib/asterisk/agi-bin/confirmar_cita.agi", line 143, in capturar_respuesta
+    tecla = agi.get_data(AUDIO_MENU, 5000, 1)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/asterisk/agi.py", line 448, in get_data
+    result = self.execute('GET DATA', filename, timeout, max_digits)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/asterisk/agi.py", line 150, in execute
+    return self.get_result()
+           ^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/asterisk/agi.py", line 191, in get_result
+    raise AGIAppError("Error executing application, or hangup")
+asterisk.agi.AGIAppError: Error executing application, or hangup
+2026-07-12 21:31:38,342 [INFO] Llamada entrante. Anexo=1001
+2026-07-12 21:31:38,343 [INFO] Cita encontrada anexo=1001 paciente=Adrian Munoz
+2026-07-12 21:32:03,885 [INFO] Anexo=1001 respondio=si opcion=confirma (tecla 1)
+2026-07-12 21:32:23,654 [INFO] Llamada entrante. Anexo=1001
+2026-07-12 21:32:23,655 [INFO] Cita encontrada anexo=1001 paciente=Adrian Munoz
+2026-07-12 21:32:49,024 [INFO] Anexo=1001 respondio=si opcion=reagenda (tecla 3)
+2026-07-12 21:53:46,627 [INFO] Llamada entrante. Anexo=1002
+2026-07-12 21:53:46,628 [INFO] Cita encontrada anexo=1002 paciente=Miguel Rodriguez
+2026-07-12 21:54:12,388 [INFO] Anexo=1002 respondio=si opcion=reagenda (tecla 3)
+2026-07-12 21:54:57,468 [INFO] Llamada entrante. Anexo=1001
+2026-07-12 21:54:57,469 [INFO] Cita encontrada anexo=1001 paciente=Adrian Munoz
+2026-07-12 21:55:22,622 [INFO] Anexo=1001 respondio=si opcion=confirma (tecla 1)
+2026-07-12 22:38:00,599 [INFO] Llamada entrante. Anexo=1001
+2026-07-12 22:38:00,600 [INFO] Cita encontrada anexo=1001 paciente=Adrian Munoz
+2026-07-12 22:38:25,781 [INFO] Anexo=1001 respondio=si opcion=Cancelada (tecla 2)
+2026-07-12 22:38:25,973 [INFO] Envío exitoso a n8n. Código respuesta: 200
+2026-07-12 22:43:51,842 [INFO] Llamada entrante. Anexo=1001
+2026-07-12 22:43:51,843 [INFO] Cita encontrada anexo=1001 paciente=Adrian Munoz
+2026-07-12 22:44:17,970 [INFO] Anexo=1001 respondio=si opcion=Confirmada (tecla 1)
+2026-07-12 22:44:18,065 [INFO] Envío exitoso a n8n. Código respuesta: 200
+2026-07-12 22:46:18,701 [INFO] Llamada entrante. Anexo=1002
+2026-07-12 22:46:18,701 [INFO] Cita encontrada anexo=1002 paciente=Miguel Rodriguez
+2026-07-12 22:46:44,641 [INFO] Anexo=1002 respondio=si opcion=Por Reprogramar (tecla 3)
+2026-07-12 22:46:44,741 [INFO] Envío exitoso a n8n. Código respuesta: 200
+2026-07-12 22:49:06,487 [INFO] Llamada entrante. Anexo=1002
+2026-07-12 22:49:06,488 [INFO] Cita encontrada anexo=1002 paciente=Miguel Rodriguez
+2026-07-12 22:49:33,269 [INFO] Anexo=1002 respondio=si opcion=Cancelada (tecla 2)
+2026-07-12 22:49:33,364 [INFO] Envío exitoso a n8n. Código respuesta: 200
+2026-07-12 22:50:16,904 [INFO] Llamada entrante. Anexo=1001
+2026-07-12 22:50:16,905 [INFO] Cita encontrada anexo=1001 paciente=Adrian Munoz
+2026-07-12 22:50:43,615 [INFO] Anexo=1001 respondio=si opcion=Por Reprogramar (tecla 3)
+2026-07-12 22:50:43,704 [INFO] Envío exitoso a n8n. Código respuesta: 200

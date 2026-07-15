@@ -1,0 +1,4 @@
+anexo,paciente,especialidad,fecha,hora,audio_especialidad
+1001,Adrian Munoz,Cardiologia,2026-07-15,19:00,custom/esp_cardiologia
+1002,Miguel Rodriguez,Dermatologia,2026-07-17,11:00,custom/esp_dermatologia
+1003,Pedro Soto,Traumatologia,2025-12-16,08:15,custom/esp_traumatologia

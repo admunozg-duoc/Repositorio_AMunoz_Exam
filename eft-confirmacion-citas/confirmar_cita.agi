@@ -1,0 +1,220 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+confirmar_cita.agi
+==================
+Sistema de Confirmación de Citas — CUY5132 (Comunicaciones Unificadas, Duoc UC).
+"""
+
+import sys
+import os
+import csv
+import logging
+import json                               # <--- NUEVA ADICIÓN PARA EL PAYLOAD
+import urllib.request                     # <--- NUEVA ADICIÓN PARA EL ENVÍO WEB
+from datetime import datetime
+
+from asterisk.agi import AGI
+
+# ===========================================================================
+# CONFIGURACIÓN
+# ===========================================================================
+CITAS_CSV      = "/var/lib/asterisk/agi-bin/citas.csv"
+RESULTADOS_CSV = "/var/lib/asterisk/agi-bin/resultados.csv"
+LOG_PATH       = "/var/log/asterisk/confirmar_cita.log"
+
+# URL de tu Webhook de n8n (Asegúrate de cambiarla por tu dominio real)
+URL_WEBHOOK_N8N = "https://admunozgcuep3.ddns.net/webhook/interaccion-clinica" # <--- NUEVA CONFIGURACIÓN
+
+DTMF_A_OPCION = {
+    "1": "Confirmada",       # <--- Editado para que llegue legible a Slack
+    "2": "Cancelada",        # <--- Editado para que llegue legible a Slack
+    "3": "Por Reprogramar",  # <--- Editado para que llegue legible a Slack
+}
+
+AUDIO_BIENVENIDA    = "custom/bienvenida"
+AUDIO_A_LAS         = "custom/a_las"
+AUDIO_DE            = "custom/de"
+AUDIO_MENU          = "custom/menu_opciones"
+AUDIO_NO_ENCONTRADA = "custom/no_encontrada"
+AUDIO_DESPEDIDA     = "custom/despedida"
+AUDIO_ERROR         = "custom/error_sistema"
+
+RESULTADOS_HEADER = ["anexo", "respondio", "opcion", "timestamp"]
+
+
+# ===========================================================================
+# LOGGING
+# ===========================================================================
+def configurar_log():
+    logging.basicConfig(
+        filename=LOG_PATH,
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(message)s",
+    )
+    return logging.getLogger("confirmar_cita")
+
+
+# ===========================================================================
+# ACCESO A DATOS (CSV)
+# ===========================================================================
+def buscar_cita(anexo):
+    try:
+        with open(CITAS_CSV, newline="", encoding="utf-8") as f:
+            for fila in csv.DictReader(f):
+                if fila.get("anexo") == str(anexo):
+                    return fila
+    except FileNotFoundError:
+        return None
+    return None
+
+
+def registrar_resultado(anexo, respondio, opcion):
+    archivo_nuevo = not os.path.exists(RESULTADOS_CSV)
+    with open(RESULTADOS_CSV, "a", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        if archivo_nuevo:
+            w.writerow(RESULTADOS_HEADER)
+        w.writerow([
+            anexo, respondio, opcion,
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        ])
+
+
+# ===========================================================================
+# FUNCIÓN DE ENVÍO DE DATOS A N8N (NUEVA FUNCIÓN ADICIONADA)
+# ===========================================================================
+def enviar_notificacion_n8n(cita, anexo, respondio, estado_opcion, log):
+    """Construye el JSON ordenado y lo despacha al Webhook de n8n."""
+    payload = {
+        "evento": "resultado_cita_dtmf",
+        "anexo": anexo,
+        "paciente": cita.get("paciente", "Desconocido"),
+        "especialidad": cita.get("especialidad", "No Especificada"),
+        "fecha": cita.get("fecha", "--"),
+        "hora": cita.get("hora", "--"),
+        "respondio": respondio,
+        "estado_confirmacion": estado_opcion if respondio == "si" else "No Respondido / Abandonado"
+    }
+    
+    try:
+        data_json = json.dumps(payload).encode('utf-8')
+        req = urllib.request.Request(
+            URL_WEBHOOK_N8N, 
+            data=data_json, 
+            headers={'Content-Type': 'application/json'},
+            method='POST'
+        )
+        # Timeout de 4 segundos para no congelar el canal telefónico
+        with urllib.request.urlopen(req, timeout=4) as response:
+            log.info("Envío exitoso a n8n. Código respuesta: %d", response.getcode())
+    except Exception as e:
+        log.error("Fallo al enviar notificación a n8n: %s", str(e))
+
+
+# ===========================================================================
+# LOCUCIÓN POR FRAGMENTOS
+# ===========================================================================
+def locutar_cita(agi, cita, log):
+    agi.stream_file(AUDIO_BIENVENIDA)
+    try:
+        dt = datetime.strptime(
+            f"{cita['fecha']} {cita['hora']}", "%Y-%m-%d %H:%M"
+        )
+        epoch = int(dt.timestamp())
+    except (ValueError, KeyError) as e:
+        log.warning("Fecha/hora inválida en cita: %s", e)
+        epoch = None
+
+    if epoch is not None:
+        agi.say_date(epoch)
+        agi.stream_file(AUDIO_A_LAS)
+        agi.say_time(epoch)
+
+    agi.stream_file(AUDIO_DE)
+    audio_esp = cita.get("audio_especialidad")
+    if audio_esp:
+        agi.stream_file(audio_esp)
+
+
+def capturar_respuesta(agi, log):
+    MAX_INTENTOS = 3
+    for intento in range(MAX_INTENTOS):
+        tecla = agi.get_data(AUDIO_MENU, 5000, 1)
+        if tecla and tecla in DTMF_A_OPCION:
+            return tecla
+        log.info("Intento %d: tecla inválida o sin respuesta (%r)",
+                 intento + 1, tecla)
+    return None
+
+
+# ===========================================================================
+# MAIN
+# ===========================================================================
+def main():
+    log = configurar_log()
+    agi = AGI()
+
+    try:
+        # 1. Anexo Dinámico (Detectado en el Dialplan gracias al cambio previo)
+        if len(sys.argv) > 1:
+            anexo = sys.argv[1]
+        else:
+            anexo = agi.get_variable("CALLERID(num)")
+
+        log.info("Llamada entrante. Anexo=%s", anexo)
+        agi.verbose(f"Procesando confirmacion para anexo: {anexo}", 1)
+
+        # 2. Buscar cita
+        cita = buscar_cita(anexo)
+        if cita is None:
+            log.warning("Sin cita para anexo %s", anexo)
+            agi.stream_file(AUDIO_NO_ENCONTRADA)
+            agi.hangup()
+            return
+
+        log.info("Cita encontrada anexo=%s paciente=%s",
+                 anexo, cita.get("paciente"))
+
+        # 3. Locutar datos
+        locutar_cita(agi, cita, log)
+
+        # 4. Capturar DTMF
+        tecla = capturar_respuesta(agi, log)
+
+        if tecla is None:
+            log.info("Sin respuesta valida para anexo=%s", anexo)
+            registrar_resultado(anexo, "no", "")
+            
+            # <--- EDICIÓN: Notificar abandono/no respuesta a n8n
+            enviar_notificacion_n8n(cita, anexo, "no", "", log)
+            
+            agi.stream_file(AUDIO_DESPEDIDA)
+            agi.hangup()
+            return
+
+        opcion = DTMF_A_OPCION[tecla]
+
+        # 5. Registrar resultado en archivo local
+        registrar_resultado(anexo, "si", opcion)
+        log.info("Anexo=%s respondio=si opcion=%s (tecla %s)",
+                 anexo, opcion, tecla)
+
+        # <--- EDICIÓN: Invocar el envío en tiempo real a n8n pasándole los datos ordenados
+        enviar_notificacion_n8n(cita, anexo, "si", opcion, log)
+
+        # 6. Cierre
+        agi.stream_file(AUDIO_DESPEDIDA)
+        agi.hangup()
+
+    except Exception as e:
+        log.exception("Error no controlado en el AGI: %s", e)
+        try:
+            agi.stream_file(AUDIO_ERROR)
+            agi.hangup()
+        except Exception:
+            pass
+
+
+if __name__ == "__main__":
+    main()
